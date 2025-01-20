@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
 import yt_dlp
+import os
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -21,6 +23,15 @@ async def download_video(request: URLRequest):
             return {"message": f"Video '{title}' has been downloaded successfully!"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/download-file")
+async def download_file():
+    file_path = "./ds.mp3"
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="audio/mpeg", filename="ds.mp3")
+    else:
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 if __name__ == "__main__":

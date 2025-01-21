@@ -11,7 +11,17 @@ export const videoApi = createApi({
         body: data,
       }),
     }),
+    segmentVideo: builder.mutation<
+      any,
+      { segment_duration: string; input_file: string }
+    >({
+      query: (data) => ({
+        url: "split",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useDownloadVideoMutation } = videoApi;
+export const { useDownloadVideoMutation, useSegmentVideoMutation } = videoApi;

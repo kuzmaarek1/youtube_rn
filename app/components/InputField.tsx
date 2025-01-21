@@ -4,18 +4,24 @@ import { Jiro } from "react-native-textinput-effects";
 
 type InputFieldProps = {
   value: string;
+  name: string;
   onChange: (text: string) => void;
   onBlur: () => void;
 };
 
-const InputField: React.FC<InputFieldProps> = ({ value, onChange, onBlur }) => {
+const InputField: React.FC<InputFieldProps> = ({
+  value,
+  name,
+  onChange,
+  onBlur,
+}) => {
   return (
     <Jiro
-      label={"URL"}
+      label={name}
       onBlur={onBlur}
       onChangeText={onChange}
       value={value}
-      keyboardType="url"
+      //keyboardType="url"
       autoCapitalize="none"
       borderColor={"#ff0000"}
       labelStyle={{

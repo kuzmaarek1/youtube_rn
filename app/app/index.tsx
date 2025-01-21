@@ -2,6 +2,7 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 import { Platform, Alert } from "react-native";
+import { Link, Redirect, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
@@ -17,6 +18,7 @@ export default function HomeScreen() {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -114,7 +116,12 @@ export default function HomeScreen() {
               },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <InputField value={value} onChange={onChange} onBlur={onBlur} />
+              <InputField
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+                name="URL"
+              />
             )}
           />
           {errors.url && (
@@ -138,6 +145,12 @@ export default function HomeScreen() {
           />
         </View>
       </View>
+      <CustomButton
+        title="Segment video"
+        onPress={() => {
+          router.push("/segment-video");
+        }}
+      />
     </SafeAreaView>
   );
 }

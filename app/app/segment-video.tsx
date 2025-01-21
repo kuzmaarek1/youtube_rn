@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text, View, Alert } from "react-native";
+import { Text, View, Alert, FlatList } from "react-native";
 import { useSegmentVideoMutation } from "@/api/videoApi";
+import { useDownloadFile } from "@/hooks/useDownloadFile";
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 
@@ -10,12 +11,13 @@ type SegmentFormData = {
 };
 
 const SegmentVideoForm = () => {
+  const [segments, setSegments] = useState<string[]>([]);
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<SegmentFormData>();
-
+  const { downloadFile } = useDownloadFile();
   const handleSegmentSubmit = async (data: SegmentFormData) => {
     const segmentDuration = parseInt(data.segment_duration, 10);
     if (isNaN(segmentDuration) || segmentDuration <= 0) {
@@ -23,15 +25,11 @@ const SegmentVideoForm = () => {
       return;
     }
     try {
-      console.log({
-        ...data,
-        input_file: "./ds.mp3",
-      });
-      await segmentVideo({
+      const result = await segmentVideo({
         ...data,
         input_file: "./ds.mp3",
       }).unwrap();
-
+      setSegments(result.segments);
       console.log("Segment video successfully");
     } catch (err) {
       console.error("Failed to segment video", err);
@@ -41,6 +39,14 @@ const SegmentVideoForm = () => {
   const [segmentVideo, { isLoading, isError, isSuccess, error }] =
     useSegmentVideoMutation();
 
+  const hadleDownloadFile = async (file: string) => {
+    await downloadFile(
+      `http://192.168.0.113:8000/download-file?file_path=./films/${file}`,
+      file
+    );
+  };
+
+  console.log(segments);
   return (
     <View className="mx-4 mt-4">
       <Text className="text-blue-500 font-bold text-xl mb-4">
@@ -80,6 +86,27 @@ const SegmentVideoForm = () => {
           isLoading={isLoading}
         />
       </View>
+      {segments?.length > 0 && (
+        <View className="mt-6">
+          <Text className="text-blue-500 font-bold text-lg mb-2">
+            Segments:
+          </Text>
+          <FlatList
+            data={segments}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View className="flex flex-row  items-center">
+                <Text style={{ marginBottom: 8, color: "black" }}>{item}</Text>
+                <CustomButton
+                  title="Dowload"
+                  onPress={() => hadleDownloadFile(item)}
+                  isLoading={false}
+                />
+              </View>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 };

@@ -5,6 +5,7 @@ import yt_dlp
 import os
 import ffmpeg
 from fastapi.responses import FileResponse
+from fastapi import Query
 
 app = FastAPI()
 
@@ -27,10 +28,10 @@ async def download_video(request: URLRequest):
 
 
 @app.get("/download-file")
-async def download_file():
-    file_path = "./ds.mp3"
+async def download_file(file_path: str = Query(...)):
     if os.path.exists(file_path):
-        return FileResponse(file_path, media_type="audio/mpeg", filename="ds.mp3")
+        filename = os.path.basename(file_path)
+        return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
     else:
         raise HTTPException(status_code=404, detail="File not found")
 
@@ -69,9 +70,7 @@ async def split_file(request: SplitRequest):
 
     if output_dir:
         segment_files = os.listdir(output_dir)
-        segment_files = [
-            f"{output_dir}/{file}" for file in segment_files if file.endswith(".mp3")
-        ]
+        segment_files = [f"{file}" for file in segment_files if file.endswith(".mp3")]
         return {
             "message": f"File '{input_file}' has been split successfully.",
             "segments": segment_files,

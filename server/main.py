@@ -6,6 +6,8 @@ import os
 import ffmpeg
 from fastapi.responses import FileResponse
 from fastapi import Query
+from zipfile import ZipFile
+from typing import List
 
 app = FastAPI()
 
@@ -34,6 +36,29 @@ async def download_file(file_path: str = Query(...)):
         return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
     else:
         raise HTTPException(status_code=404, detail="File not found")
+
+
+@app.get("/download-files")
+async def download_files(file_paths: List[str] = Query(...)):
+    zip_filename = "downloaded_files.zip"
+
+    if not file_paths:
+        raise HTTPException(status_code=400, detail="No files provided.")
+
+    print(file_paths)
+    # Verify that all requested files exist
+    for file_path in file_paths:
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
+
+    # Create a ZIP file containing all requested files
+    with ZipFile(zip_filename, "w") as zipf:
+        for file_path in file_paths:
+            zipf.write(file_path, os.path.basename(file_path))
+
+    return FileResponse(
+        zip_filename, media_type="application/zip", filename=zip_filename
+    )
 
 
 class SplitRequest(BaseModel):

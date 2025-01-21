@@ -46,6 +46,13 @@ const SegmentVideoForm = () => {
     );
   };
 
+  const hadleDownloadAllFiles = async (file: string) => {
+    const url = `http://192.168.0.113:8000/download-files?file_paths=${segments
+      .map((file) => `./films/${file}`)
+      .join("&file_paths=")}`;
+    await downloadFile(url, file);
+  };
+
   console.log(segments);
   return (
     <View className="mx-4 mt-4">
@@ -107,6 +114,11 @@ const SegmentVideoForm = () => {
           />
         </View>
       )}
+      <CustomButton
+        title="Download all"
+        onPress={() => hadleDownloadAllFiles("all.zip")}
+        isLoading={false}
+      />
     </View>
   );
 };

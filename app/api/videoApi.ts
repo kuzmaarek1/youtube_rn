@@ -4,9 +4,9 @@ export const videoApi = createApi({
   reducerPath: "videoApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://192.168.0.113:8000/" }),
   endpoints: (builder) => ({
-    downloadVideo: builder.mutation<any, { url: string }>({
+    downloadVideo: builder.mutation<any, { url: string; userId: string }>({
       query: (data) => ({
-        url: "download",
+        url: `download/${data.userId}`,
         method: "POST",
         body: data,
       }),

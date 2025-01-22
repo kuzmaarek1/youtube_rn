@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 import uvicorn
 import yt_dlp
@@ -8,6 +8,8 @@ from fastapi.responses import FileResponse
 from fastapi import Query
 from zipfile import ZipFile
 from typing import List
+import asyncio
+
 
 app = FastAPI()
 
@@ -16,15 +18,54 @@ class URLRequest(BaseModel):
     url: str
 
 
-@app.post("/download")
-async def download_video(request: URLRequest):
-    ydl_opts = {"extract_audio": True, "format": "bestaudio", "outtmpl": "ds.mp3"}
-    print("pobieranie")
+app = FastAPI()
+
+# Słownik przechowujący aktywne połączenia WebSocket, mapowane do użytkowników (np. po ID)
+active_websockets = {}
+
+
+@app.websocket("/ws/progress/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    await websocket.accept()
+    active_websockets[user_id] = websocket
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        print(f"Klient {user_id} się rozłączył")
+        del active_websockets[user_id]
+
+
+def download_progress_hook(d, user_id):
+    if d["status"] == "downloading":
+        total_size = d.get("total_bytes", None)
+        downloaded_size = d.get("downloaded_bytes", 0)
+        if total_size:
+            percentage = (downloaded_size / total_size) * 100
+            if user_id in active_websockets:
+                websocket = active_websockets[user_id]
+                print(f"Sending progress to WebSocket for user {user_id}")
+                asyncio.create_task(websocket.send_text(f"Progress: {percentage:.2f}%"))
+                print(f"Progress: {percentage:.2f}%")
+            return percentage
+    return None
+
+
+@app.post("/download/{user_id}")
+async def download_video(request: URLRequest, user_id: str):
+    ydl_opts = {
+        "extract_audio": True,
+        "format": "bestaudio",
+        "outtmpl": "ds.mp3",
+        "progress_hooks": [lambda d: download_progress_hook(d, user_id)],
+    }
+    print(request.url)
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(request.url, download=True)
             title = info_dict.get("title", "Unknown title")
-            return {"message": f"Video '{title}' has been downloaded successfully!"}
+            return {"message": f"Wideo '{title}' zostało pomyślnie pobrane!"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -45,13 +86,10 @@ async def download_files(file_paths: List[str] = Query(...)):
     if not file_paths:
         raise HTTPException(status_code=400, detail="No files provided.")
 
-    print(file_paths)
-    # Verify that all requested files exist
     for file_path in file_paths:
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
 
-    # Create a ZIP file containing all requested files
     with ZipFile(zip_filename, "w") as zipf:
         for file_path in file_paths:
             zipf.write(file_path, os.path.basename(file_path))

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 import { Platform, Alert } from "react-native";
@@ -20,14 +20,59 @@ export default function HomeScreen() {
     watch,
     formState: { errors },
   } = useForm<FormData>();
+  const socket = useRef<WebSocket | null>(null);
+  const [progress, setProgress] = useState<number>(0);
   const { downloadFile } = useDownloadFile();
+
+  const userId = "123";
+
+  useEffect(() => {
+    // Otwieramy połączenie WebSocket
+    socket.current = new WebSocket(
+      `ws://192.168.0.113:8000/ws/progress/${userId}`
+    );
+    // Nasłuchujemy wiadomości z WebSocket
+    socket.current.onopen = () => {
+      console.log("Połączenie WebSocket otwarte");
+    };
+
+    socket.current.onmessage = (event) => {
+      const message = event.data;
+      console.log(message);
+      if (message.includes("Progress")) {
+        const match = message.match(/Progress: (\d+(\.\d{1,2})?)%/);
+        if (match) {
+          setProgress(parseFloat(match[1])); // Aktualizujemy postęp
+        }
+      }
+    };
+
+    socket.current.onerror = (error) => {
+      console.error("Błąd WebSocket:", error);
+    };
+
+    socket.current.onclose = () => {
+      console.log("Połączenie WebSocket zamknięte");
+    };
+
+    // Zwracamy funkcję czyszczącą, która zamknie połączenie WebSocket po usunięciu komponentu
+    return () => {
+      if (socket.current) {
+        socket.current.close();
+        console.log("Połączenie WebSocket zostało zamknięte");
+      }
+    };
+  }, [userId]);
 
   const onSubmit = async (data: FormData) => {
     try {
-      await downloadVideo({ url: data.url }).unwrap();
+      setProgress(0);
+      await downloadVideo({ url: data.url, userId: userId }).unwrap();
       console.log("Video downloaded successfully");
     } catch (err) {
       console.error("Failed to download video", err);
+    } finally {
+      setProgress(100);
     }
   };
 
@@ -40,6 +85,8 @@ export default function HomeScreen() {
 
   const [downloadVideo, { isLoading, isError, isSuccess, error }] =
     useDownloadVideoMutation();
+
+  console.log(progress);
 
   return (
     <SafeAreaView className="bg-green-500 h-full p-4 text-black">
@@ -82,6 +129,7 @@ export default function HomeScreen() {
             isLoading={isLoading}
           />
         </View>
+        <Text>{progress}</Text>
         <View className="w-full justify-center items-center mt-4">
           <CustomButton
             title="Download File"

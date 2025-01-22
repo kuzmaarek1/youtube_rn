@@ -1,39 +1,52 @@
-import React from "react";
-import { Text, ActivityIndicator, View } from "react-native";
-import ReallyAwesomeButton from "react-native-really-awesome-button";
+import React, { useState, useEffect } from "react";
+import { Animated, Text, View, TouchableOpacity } from "react-native";
 
 type CustomButtonProps = {
   title: string;
   onPress: () => void;
-  isLoading?: boolean;
+  isLoading: boolean;
+  progressPercent: number;
 };
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   title,
   onPress,
   isLoading,
+  progressPercent,
 }) => {
+  const [fillAnimation] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    if (isLoading) {
+      Animated.timing(fillAnimation, {
+        toValue: progressPercent,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [isLoading, progressPercent]);
+
+  const fillWidth = fillAnimation.interpolate({
+    inputRange: [0, 100],
+    outputRange: ["0%", "100%"],
+  });
+
   return (
-    <View style={{ width: "60%" }}>
-      <ReallyAwesomeButton
-        progress
-        onPress={async (next) => {
-          await onPress();
-          next();
-        }}
-        borderRadius={25}
-        raiseLevel={0}
-        width={200}
-        height={50}
+    <View className="flex items-center justify-center mt-8">
+      <TouchableOpacity
+        className="relative w-48 h-12 justify-center items-center border-2 border-red-500"
+        style={{ backgroundColor: isLoading ? "#f0f0f0" : "#ff0000" }}
+        onPress={onPress}
         disabled={isLoading}
-        borderWidth={2}
-        borderColor={"#ff0000"}
-        textColor={"#ff0000"}
-        backgroundColor={"#ffffff"}
-        style={{ backgroundColor: isLoading ? 1 : 1 }}
       >
-        {title}
-      </ReallyAwesomeButton>
+        <Animated.View
+          className="absolute top-0 left-0 bottom-0 rounded-xl"
+          style={{ width: fillWidth, backgroundColor: "#ff0000" }}
+        />
+        <Text className={"text-white font-bold text-lg"}>
+          {isLoading ? `${progressPercent}%` : title}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };

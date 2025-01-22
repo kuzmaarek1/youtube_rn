@@ -127,6 +127,7 @@ export default function HomeScreen() {
             title="Submit"
             onPress={handleSubmit(onSubmit)}
             isLoading={isLoading}
+            progressPercent={progress}
           />
         </View>
         <Text>{progress}</Text>

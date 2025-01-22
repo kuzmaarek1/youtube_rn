@@ -18,8 +18,6 @@ class URLRequest(BaseModel):
     url: str
 
 
-app = FastAPI()
-
 # Słownik przechowujący aktywne połączenia WebSocket, mapowane do użytkowników (np. po ID)
 active_websockets = {}
 
@@ -36,36 +34,52 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         del active_websockets[user_id]
 
 
+async def send_progress_to_websocket(user_id: str, message: str):
+    if user_id in active_websockets:
+        websocket = active_websockets[user_id]
+        try:
+            await websocket.send_text(message)
+        except Exception as e:
+            print(f"Nie udało się wysłać wiadomości do użytkownika {user_id}: {e}")
+
+
 def download_progress_hook(d, user_id):
     if d["status"] == "downloading":
         total_size = d.get("total_bytes", None)
         downloaded_size = d.get("downloaded_bytes", 0)
         if total_size:
             percentage = (downloaded_size / total_size) * 100
-            if user_id in active_websockets:
-                websocket = active_websockets[user_id]
-                print(f"Sending progress to WebSocket for user {user_id}")
-                asyncio.create_task(websocket.send_text(f"Progress: {percentage:.2f}%"))
-                print(f"Progress: {percentage:.2f}%")
-            return percentage
-    return None
+            print(f"Postęp pobierania dla użytkownika {user_id}: {percentage:.2f}%")
+            asyncio.run(
+                send_progress_to_websocket(user_id, f"Progress: {percentage:.2f}%")
+            )
 
 
-@app.post("/download/{user_id}")
-async def download_video(request: URLRequest, user_id: str):
+def run_blocking_download(url: str, user_id: str):
     ydl_opts = {
         "extract_audio": True,
         "format": "bestaudio",
         "outtmpl": "ds.mp3",
         "progress_hooks": [lambda d: download_progress_hook(d, user_id)],
     }
-    print(request.url)
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        return info_dict
 
+
+@app.post("/download/{user_id}")
+async def download_video(request: URLRequest, user_id: str):
+    loop = asyncio.get_event_loop()
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(request.url, download=True)
-            title = info_dict.get("title", "Unknown title")
-            return {"message": f"Wideo '{title}' zostało pomyślnie pobrane!"}
+        info_dict = await loop.run_in_executor(
+            None, run_blocking_download, request.url, user_id
+        )
+        title = info_dict.get("title", "Unknown title")
+        if user_id in active_websockets:
+            websocket = active_websockets[user_id]
+            await websocket.send_text(f"Pobieranie zakończone: {title}")
+
+        return {"message": f"Wideo '{title}' zostało pomyślnie pobrane!"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

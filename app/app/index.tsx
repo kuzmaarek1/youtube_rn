@@ -1,16 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Dimensions,
-  Image,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import React from "react";
+import { View, Text, Dimensions, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useSharedValue } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
 import CustomButton from "@/components/CustomButton";
+
+const { width: windowWidth } = Dimensions.get("window");
 
 const pages = [
   {
@@ -34,25 +33,15 @@ const pages = [
 ];
 
 const HomeScreen = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const flatListRef = useRef(null);
-  const startScrollX = useRef(0);
+  const progress = useSharedValue<number>(0);
+  const ref = React.useRef<ICarouselInstance>(null);
 
-  const viewableItemsChangedRef = useRef(({ viewableItems }) => {
-    if (viewableItems.length > 0) {
-      setActiveIndex(viewableItems[0].index);
-    }
-  });
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const nextIndex = (activeIndex + 1) % pages.length;
-      setActiveIndex(nextIndex);
-      flatListRef.current.scrollToIndex({ index: nextIndex, animated: true });
-    }, 10000); // co 10 sekund
-
-    return () => clearInterval(interval); // czyszczenie interwału przy odmontowywaniu komponentu
-  }, [activeIndex]);
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      count: index - progress.value,
+      animated: true,
+    });
+  };
 
   const renderItem = ({ item }) => {
     return (
@@ -60,7 +49,7 @@ const HomeScreen = () => {
         className="h-full justify-center items-center"
         style={{
           backgroundColor: item.backgroundColor,
-          width: Dimensions.get("window").width,
+          width: windowWidth,
         }}
       >
         <Image
@@ -76,7 +65,6 @@ const HomeScreen = () => {
         <CustomButton
           title="Download File"
           onPress={() => {
-            // navigate to download screen
             router.push("/downloand-video");
           }}
           isLoading={false}
@@ -85,67 +73,42 @@ const HomeScreen = () => {
     );
   };
 
-  const handleScrollBeginDrag = (e) => {
-    startScrollX.current = e.nativeEvent.contentOffset.x;
-  };
-
-  const handleScrollEndDrag = (e) => {
-    const endScrollX = e.nativeEvent.contentOffset.x;
-    const windowWidth = Dimensions.get("window").width;
-    if (activeIndex === 0 && endScrollX === 0) {
-      setActiveIndex(pages.length - 1);
-      flatListRef.current.scrollToIndex({
-        index: pages.length - 1,
-        animated: true,
-      });
-    } else if (
-      activeIndex === pages.length - 1 &&
-      endScrollX >= (pages.length - 1) * windowWidth
-    ) {
-      setActiveIndex(0);
-      flatListRef.current.scrollToIndex({
-        index: 0,
-        animated: true,
-      });
-    }
-  };
-
-  const handleDotPress = (index) => {
-    setActiveIndex(index);
-    flatListRef.current.scrollToIndex({ index, animated: true });
-  };
-
   return (
     <SafeAreaView className="flex-1 h-full">
-      <FlatList
-        ref={flatListRef}
-        horizontal
-        pagingEnabled
+      <Carousel
+        ref={ref}
+        loop
+        width={windowWidth}
+        height={Dimensions.get("window").height}
+        autoPlay
+        autoPlayInterval={5000}
         data={pages}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        showsHorizontalScrollIndicator={false}
-        onViewableItemsChanged={viewableItemsChangedRef.current}
-        viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
-        onScrollBeginDrag={handleScrollBeginDrag}
-        onScrollEndDrag={handleScrollEndDrag}
+        scrollAnimationDuration={1000}
+        onProgressChange={progress}
+        renderItem={({ item }) => renderItem({ item })}
       />
-      {/* Pagination Dots */}
-      <View className="flex-row justify-center items-center mt-4">
-        {pages.map((_, index) => (
-          <TouchableOpacity key={index} onPress={() => handleDotPress(index)}>
-            <View
-              style={{
-                width: 11,
-                height: 11,
-                borderRadius: 5,
-                marginHorizontal: 5,
-                backgroundColor: activeIndex === index ? "black" : "gray",
-              }}
-            />
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Pagination.Basic<{ color: string }>
+        progress={progress}
+        data={[...new Array(3).keys()]}
+        size={20}
+        dotStyle={{
+          borderRadius: 100,
+          backgroundColor: "#262626",
+        }}
+        activeDotStyle={{
+          borderRadius: 100,
+          overflow: "hidden",
+          backgroundColor: "#f1f1f1",
+        }}
+        containerStyle={[
+          {
+            gap: 5,
+            marginBottom: 10,
+          },
+        ]}
+        horizontal
+        onPress={onPressPagination}
+      />
       <StatusBar backgroundColor="transparent" />
     </SafeAreaView>
   );

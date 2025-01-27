@@ -32,16 +32,16 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   });
 
   return (
-    <View className="flex items-center justify-center mt-8">
+    <View className="flex items-center justify-center mt-8 text-white">
       <TouchableOpacity
-        className="relative w-48 h-12 justify-center items-center border-2 border-red-500"
-        style={{ backgroundColor: isLoading ? "#f0f0f0" : "#ff0000" }}
+        className="relative w-48 h-12 justify-center items-center border-2 border-grey"
+        style={{ backgroundColor: isLoading ? "#f0f0f0" : "#606060" }}
         onPress={onPress}
         disabled={isLoading}
       >
         <Animated.View
-          className="absolute top-0 left-0 bottom-0 rounded-xl"
-          style={{ width: fillWidth, backgroundColor: "#ff0000" }}
+          className="absolute top-0 left-0 bottom-0"
+          style={{ width: fillWidth, backgroundColor: "#606060" }}
         />
         <Text className={"text-white font-bold text-lg"}>
           {isLoading ? `${progressPercent}%` : title}

@@ -28,7 +28,7 @@ const HomeScreen = () => {
   useEffect(() => {
     // Otwieramy połączenie WebSocket
     socket.current = new WebSocket(
-      `ws://192.168.0.113:8000/ws/progress/${userId}`
+      `ws://192.168.0.104:8000/ws/progress/${userId}`
     );
     // Nasłuchujemy wiadomości z WebSocket
     socket.current.onopen = () => {
@@ -54,7 +54,6 @@ const HomeScreen = () => {
       console.log("Połączenie WebSocket zamknięte");
     };
 
-    // Zwracamy funkcję czyszczącą, która zamknie połączenie WebSocket po usunięciu komponentu
     return () => {
       if (socket.current) {
         socket.current.close();
@@ -77,7 +76,7 @@ const HomeScreen = () => {
 
   const handleDownloadFile = async () => {
     await downloadFile(
-      "http://192.168.0.113:8000/download-file?file_path=./ds.mp3",
+      "http://192.168.0.104:8000/download-file?file_path=./ds.mp3",
       "ds.mp3"
     );
   };
@@ -88,7 +87,7 @@ const HomeScreen = () => {
   console.log(progress);
 
   return (
-    <SafeAreaView className="bg-green-500 h-full p-4 text-black">
+    <SafeAreaView className=" bg-darkGrey h-full p-4 text-black">
       <View>
         <Text className="text-blue-500 font-bold text-2xl mb-4">
           URL Form Example

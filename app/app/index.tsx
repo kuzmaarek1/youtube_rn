@@ -2,35 +2,17 @@ import React from "react";
 import { View, Text, Dimensions, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
 import { useSharedValue } from "react-native-reanimated";
+import LottieView from "lottie-react-native";
 import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
+import { uiConfig } from "@/constants";
 import CustomButton from "@/components/CustomButton";
 
 const { width: windowWidth } = Dimensions.get("window");
-
-const pages = [
-  {
-    id: "1",
-    title: "First Page",
-    description: "This is the first page",
-    backgroundColor: "#22c55e",
-  },
-  {
-    id: "2",
-    title: "Second Page",
-    description: "This is the second page",
-    backgroundColor: "#3b82f6",
-  },
-  {
-    id: "3",
-    title: "Third Page",
-    description: "This is the third page",
-    backgroundColor: "#f59e0b",
-  },
-];
 
 const HomeScreen = () => {
   const progress = useSharedValue<number>(0);
@@ -48,24 +30,23 @@ const HomeScreen = () => {
       <View
         className="h-full justify-center items-center"
         style={{
-          backgroundColor: item.backgroundColor,
           width: windowWidth,
         }}
       >
-        <Image
-          source={require("@/assets/images/icon.png")}
-          style={{
-            width: 120,
-            height: 120,
-          }}
+        <Text className="px-2 text-2xl text-white mt-6">{item.title}</Text>
+        <LottieView
+          source={item.animations}
+          style={{ width: "100%", height: "50%" }}
+          autoPlay
+          loop
         />
-        <Text className="text-2xl text-white mt-6">{item.title}</Text>
-        <Text className="text-base text-white mt-2">{item.description}</Text>
-        <Text className="text-xs text-white mt-1">{item.id}</Text>
+        <Text className="text-center px-6 text-base text-white mt-2">
+          {item.description}
+        </Text>
         <CustomButton
-          title="Download File"
+          title={item.titleButton}
           onPress={() => {
-            router.push("/downloand-video");
+            router.push(item.path);
           }}
           isLoading={false}
         />
@@ -74,23 +55,22 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 h-full">
+    <SafeAreaView className="flex-1 h-full bg-darkGrey">
       <Carousel
         ref={ref}
         loop
         width={windowWidth}
-        height={Dimensions.get("window").height}
         autoPlay
         autoPlayInterval={5000}
-        data={pages}
+        data={uiConfig.mainPages}
         scrollAnimationDuration={1000}
         onProgressChange={progress}
         renderItem={({ item }) => renderItem({ item })}
       />
       <Pagination.Basic<{ color: string }>
         progress={progress}
-        data={[...new Array(3).keys()]}
-        size={20}
+        data={[...new Array(uiConfig.mainPages.length).keys()]}
+        size={15}
         dotStyle={{
           borderRadius: 100,
           backgroundColor: "#262626",

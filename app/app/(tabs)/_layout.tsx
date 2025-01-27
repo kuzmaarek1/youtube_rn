@@ -3,7 +3,7 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { tabScreens } from "@/constants";
+import { uiConfig } from "@/constants";
 
 export default function TabLayout() {
   return (
@@ -21,7 +21,7 @@ export default function TabLayout() {
           },
         }}
       >
-        {tabScreens.map(({ name, title }) => (
+        {uiConfig.tabScreens.map(({ name, title }) => (
           <Tabs.Screen
             key={name}
             name={name}

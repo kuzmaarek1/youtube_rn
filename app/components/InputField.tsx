@@ -23,9 +23,9 @@ const InputField: React.FC<InputFieldProps> = ({
       value={value}
       //keyboardType="url"
       autoCapitalize="none"
-      borderColor={"#ff0000"}
+      borderColor={"#606060"}
       labelStyle={{
-        color: "#ff0000",
+        color: "#606060",
         fontWeight: "bold",
       }}
       inputStyle={{ color: "white", paddingRight: 30 }}

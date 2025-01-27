@@ -1,12 +1,4 @@
-const tabScreens = [
-  {
-    name: "downloand-video",
-    title: "Download Video",
-  },
-  {
-    name: "segment-video",
-    title: "Segment Video",
-  },
-];
+import animations from "./animations";
+import uiConfig from "./uiConfig";
 
-export { tabScreens };
+export { animations, uiConfig };

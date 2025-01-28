@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Dimensions, Image } from "react-native";
+import { View, Text, Dimensions, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
@@ -17,6 +17,7 @@ const { width: windowWidth } = Dimensions.get("window");
 const HomeScreen = () => {
   const progress = useSharedValue<number>(0);
   const ref = React.useRef<ICarouselInstance>(null);
+  const scheme = useColorScheme();
 
   const onPressPagination = (index: number) => {
     ref.current?.scrollTo({
@@ -33,14 +34,24 @@ const HomeScreen = () => {
           width: windowWidth,
         }}
       >
-        <Text className="px-2 text-2xl text-white mt-6">{item.title}</Text>
+        <Text
+          className={`px-3 text-center text-4xl mt-6 font-semibold ${
+            scheme === "dark" ? "text-white" : " text-dark"
+          }`}
+        >
+          {item.title}
+        </Text>
         <LottieView
           source={item.animations}
           style={{ width: "100%", height: "50%" }}
           autoPlay
           loop
         />
-        <Text className="text-center px-6 text-base text-white mt-2">
+        <Text
+          className={`text-center px-6 text-lg mt-2 ${
+            scheme === "dark" ? "text-white" : " text-dark"
+          }`}
+        >
           {item.description}
         </Text>
         <CustomButton
@@ -55,40 +66,46 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 h-full bg-darkGrey">
-      <Carousel
-        ref={ref}
-        loop
-        width={windowWidth}
-        autoPlay
-        autoPlayInterval={5000}
-        data={uiConfig.mainPages}
-        scrollAnimationDuration={1000}
-        onProgressChange={progress}
-        renderItem={({ item }) => renderItem({ item })}
-      />
-      <Pagination.Basic<{ color: string }>
-        progress={progress}
-        data={[...new Array(uiConfig.mainPages.length).keys()]}
-        size={15}
-        dotStyle={{
-          borderRadius: 100,
-          backgroundColor: "#262626",
-        }}
-        activeDotStyle={{
-          borderRadius: 100,
-          overflow: "hidden",
-          backgroundColor: "#f1f1f1",
-        }}
-        containerStyle={[
-          {
-            gap: 5,
-            marginBottom: 10,
-          },
-        ]}
-        horizontal
-        onPress={onPressPagination}
-      />
+    <SafeAreaView
+      className={`flex-1 h-full flex items-center justify-center ${
+        scheme === "dark" ? "bg-dark text-white" : "bg-white text-dark"
+      }`}
+    >
+      <View className="h-[90%] gap-4">
+        <Carousel
+          ref={ref}
+          loop
+          width={windowWidth}
+          autoPlay
+          autoPlayInterval={5000}
+          data={uiConfig.mainPages}
+          scrollAnimationDuration={1000}
+          onProgressChange={progress}
+          renderItem={({ item }) => renderItem({ item })}
+        />
+        <Pagination.Basic<{ color: string }>
+          progress={progress}
+          data={[...new Array(uiConfig.mainPages.length).keys()]}
+          size={15}
+          dotStyle={{
+            borderRadius: 100,
+            backgroundColor: "#b2b2b2",
+          }}
+          activeDotStyle={{
+            borderRadius: 100,
+            overflow: "hidden",
+            backgroundColor: scheme === "dark" ? "#ffffff" : "#181818",
+          }}
+          containerStyle={[
+            {
+              gap: 5,
+              marginBottom: 10,
+            },
+          ]}
+          horizontal
+          onPress={onPressPagination}
+        />
+      </View>
       <StatusBar backgroundColor="transparent" />
     </SafeAreaView>
   );

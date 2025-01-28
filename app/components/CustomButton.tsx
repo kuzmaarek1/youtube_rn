@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Animated, Text, View, TouchableOpacity } from "react-native";
+import {
+  Animated,
+  Text,
+  View,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
 
 type CustomButtonProps = {
   title: string;
@@ -14,6 +20,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   isLoading,
   progressPercent,
 }) => {
+  const scheme = useColorScheme();
   const [fillAnimation] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -31,19 +38,36 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     outputRange: ["0%", "100%"],
   });
 
+  const buttonBgColor =
+    scheme === "dark"
+      ? isLoading
+        ? "bg-dark"
+        : "bg-white"
+      : isLoading
+      ? "bg-white"
+      : "bg-dark";
+
+  const borderColor = scheme === "dark" ? "border-grey" : "border-lightGrey";
   return (
-    <View className="flex items-center justify-center mt-8 text-white">
+    <View
+      className={`flex items-center justify-center mt-8 ${
+        scheme === "dark" ? "text-dark" : "text-white"
+      }`}
+    >
       <TouchableOpacity
-        className="relative w-48 h-12 justify-center items-center border-2 border-grey"
-        style={{ backgroundColor: isLoading ? "#f0f0f0" : "#606060" }}
+        className={`relative w-48 h-12 justify-center items-center border-2 ${borderColor} ${buttonBgColor}`}
         onPress={onPress}
         disabled={isLoading}
       >
         <Animated.View
           className="absolute top-0 left-0 bottom-0"
-          style={{ width: fillWidth, backgroundColor: "#606060" }}
+          style={{ width: fillWidth }}
         />
-        <Text className={"text-white font-bold text-lg"}>
+        <Text
+          className={`font-bold text-lg ${
+            scheme === "dark" ? "text-darker" : "text-white"
+          }`}
+        >
           {isLoading ? `${progressPercent}%` : title}
         </Text>
       </TouchableOpacity>

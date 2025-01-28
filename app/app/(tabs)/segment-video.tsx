@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text, View, Alert, FlatList } from "react-native";
+import { Text, View, Alert, FlatList, useColorScheme } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSegmentVideoMutation } from "@/api/videoApi";
 import { useDownloadFile } from "@/hooks/useDownloadFile";
 import InputField from "@/components/InputField";
@@ -18,6 +19,8 @@ const SegmentVideoForm = () => {
     formState: { errors },
   } = useForm<SegmentFormData>();
   const { downloadFile } = useDownloadFile();
+  const scheme = useColorScheme();
+
   const handleSegmentSubmit = async (data: SegmentFormData) => {
     const segmentDuration = parseInt(data.segment_duration, 10);
     if (isNaN(segmentDuration) || segmentDuration <= 0) {
@@ -41,13 +44,13 @@ const SegmentVideoForm = () => {
 
   const hadleDownloadFile = async (file: string) => {
     await downloadFile(
-      `http://192.168.0.104:8000/download-file?file_path=./films/${file}`,
+      `http://192.168.0.114:8000/download-file?file_path=./films/${file}`,
       file
     );
   };
 
   const hadleDownloadAllFiles = async (file: string) => {
-    const url = `http://192.168.0.104:8000/download-files?file_paths=${segments
+    const url = `http://192.168.0.114:8000/download-files?file_paths=${segments
       .map((file) => `./films/${file}`)
       .join("&file_paths=")}`;
     await downloadFile(url, file);
@@ -55,7 +58,11 @@ const SegmentVideoForm = () => {
 
   console.log(segments);
   return (
-    <View className="mx-4 mt-4 bg-darkGrey">
+    <SafeAreaView
+      className={`h-full ${
+        scheme === "dark" ? "bg-dark" : "bg-white"
+      } p-4 bg-darkGrey`}
+    >
       <Text className="text-blue-500 font-bold text-xl mb-4">
         Segment Video
       </Text>
@@ -119,7 +126,7 @@ const SegmentVideoForm = () => {
         onPress={() => hadleDownloadAllFiles("all.zip")}
         isLoading={false}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

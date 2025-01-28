@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import React from "react";
 import { Jiro } from "react-native-textinput-effects";
 
@@ -15,6 +15,7 @@ const InputField: React.FC<InputFieldProps> = ({
   onChange,
   onBlur,
 }) => {
+  const scheme = useColorScheme();
   return (
     <Jiro
       label={name}
@@ -23,12 +24,15 @@ const InputField: React.FC<InputFieldProps> = ({
       value={value}
       //keyboardType="url"
       autoCapitalize="none"
-      borderColor={"#606060"}
+      borderColor={scheme === "dark" ? "#ffffff" : "#181818"}
       labelStyle={{
-        color: "#606060",
+        color: scheme === "dark" ? "#ffffff" : "#181818",
         fontWeight: "bold",
       }}
-      inputStyle={{ color: "white", paddingRight: 30 }}
+      inputStyle={{
+        color: scheme === "dark" ? "#181818" : "#ffffff",
+        paddingRight: 30,
+      }}
     />
   );
 };

@@ -4,10 +4,12 @@ const tabScreens = [
   {
     name: "downloand-video",
     title: "Download Video",
+    sourceImage: require("@/assets/icons/youtube.png"),
   },
   {
     name: "segment-video",
     title: "Segment Video",
+    sourceImage: require("@/assets/icons/file.png"),
   },
 ];
 

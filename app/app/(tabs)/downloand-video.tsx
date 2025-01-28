@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { Text, View, useColorScheme } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDownloadVideoMutation } from "@/api/videoApi";
@@ -22,15 +22,16 @@ const HomeScreen = () => {
   const socket = useRef<WebSocket | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const { downloadFile } = useDownloadFile();
+  const scheme = useColorScheme();
 
   const userId = "123";
 
   useEffect(() => {
-    // Otwieramy połączenie WebSocket
+    
     socket.current = new WebSocket(
-      `ws://192.168.0.104:8000/ws/progress/${userId}`
+      `ws://192.168.0.114:8000/ws/progress/${userId}`
     );
-    // Nasłuchujemy wiadomości z WebSocket
+  
     socket.current.onopen = () => {
       console.log("Połączenie WebSocket otwarte");
     };
@@ -41,7 +42,7 @@ const HomeScreen = () => {
       if (message.includes("Progress")) {
         const match = message.match(/Progress: (\d+(\.\d{1,2})?)%/);
         if (match) {
-          setProgress(parseFloat(match[1])); // Aktualizujemy postęp
+          setProgress(parseFloat(match[1]));
         }
       }
     };
@@ -76,7 +77,7 @@ const HomeScreen = () => {
 
   const handleDownloadFile = async () => {
     await downloadFile(
-      "http://192.168.0.104:8000/download-file?file_path=./ds.mp3",
+      "http://192.168.0.114:8000/download-file?file_path=./ds.mp3",
       "ds.mp3"
     );
   };
@@ -87,7 +88,11 @@ const HomeScreen = () => {
   console.log(progress);
 
   return (
-    <SafeAreaView className=" bg-darkGrey h-full p-4 text-black">
+    <SafeAreaView
+      className={`${
+        scheme === "dark" ? "bg-dark" : "bg-white"
+      } scheme h-full p-4 text-black`}
+    >
       <View>
         <Text className="text-blue-500 font-bold text-2xl mb-4">
           URL Form Example

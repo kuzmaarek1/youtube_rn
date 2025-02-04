@@ -27,11 +27,10 @@ const HomeScreen = () => {
   const userId = "123";
 
   useEffect(() => {
-    
     socket.current = new WebSocket(
-      `ws://192.168.0.114:8000/ws/progress/${userId}`
+      `ws://192.168.0.112:8000/ws/progress/${userId}`
     );
-  
+
     socket.current.onopen = () => {
       console.log("Połączenie WebSocket otwarte");
     };
@@ -77,7 +76,7 @@ const HomeScreen = () => {
 
   const handleDownloadFile = async () => {
     await downloadFile(
-      "http://192.168.0.114:8000/download-file?file_path=./ds.mp3",
+      "http://192.168.0.112:8000/download-file?file_path=./ds.mp3",
       "ds.mp3"
     );
   };

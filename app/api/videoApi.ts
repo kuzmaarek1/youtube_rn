@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const videoApi = createApi({
   reducerPath: "videoApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://192.168.0.114:8000/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://192.168.0.112:8000/" }),
   endpoints: (builder) => ({
     downloadVideo: builder.mutation<any, { url: string; userId: string }>({
       query: (data) => ({

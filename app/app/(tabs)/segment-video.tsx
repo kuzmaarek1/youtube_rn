@@ -44,13 +44,13 @@ const SegmentVideoForm = () => {
 
   const hadleDownloadFile = async (file: string) => {
     await downloadFile(
-      `http://192.168.0.114:8000/download-file?file_path=./films/${file}`,
+      `http://192.168.0.112:8000/download-file?file_path=./films/${file}`,
       file
     );
   };
 
   const hadleDownloadAllFiles = async (file: string) => {
-    const url = `http://192.168.0.114:8000/download-files?file_paths=${segments
+    const url = `http://192.168.0.112:8000/download-files?file_paths=${segments
       .map((file) => `./films/${file}`)
       .join("&file_paths=")}`;
     await downloadFile(url, file);

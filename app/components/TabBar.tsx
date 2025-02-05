@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutChangeEvent, View } from "react-native";
+import { LayoutChangeEvent, View, useColorScheme } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import TabBarButton from "@/components/TabBarButton";
 import Animated, {
@@ -10,10 +10,14 @@ import Animated, {
 } from "react-native-reanimated";
 
 const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+  const scheme = useColorScheme();
   const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
   const buttonWidth = dimensions.width / state.routes.length;
 
-  const colors = { primary: "white", text: "black" };
+  const colors = {
+    primary: scheme === "dark" ? "#181818" : "white",
+    text: scheme === "dark" ? "white" : "#181818",
+  };
   const onTabbarLayout = (event: LayoutChangeEvent) => {
     setDimensions({
       height: event.nativeEvent.layout.height,
@@ -31,17 +35,14 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   return (
     <View
       onLayout={onTabbarLayout}
-      className="flex-row items-center justify-between mx-10 absolute bottom-8 left-0 right-0 bg-white py-1 rounded-2xl"
-      style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 5,
-      }}
+      className={`flex-row items-center justify-between absolute bottom-1 left-0 right-0 bg-dark py-1 rounded-2xl ${
+        scheme === "dark" ? " bg-dark " : "bg-white"
+      }`}
     >
       <Animated.View
-        className="absolute bg-[#723FEB] rounded-lg mx-4"
+        className={`absolute ${
+          scheme === "dark" ? "bg-white" : "bg-mediumGrey"
+        }  rounded-lg mx-4`}
         style={[
           animatedStyle,
           {

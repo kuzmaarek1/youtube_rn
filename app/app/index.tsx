@@ -36,7 +36,7 @@ const HomeScreen = () => {
       >
         <Text
           className={`px-3 text-center text-4xl mt-6 font-semibold ${
-            scheme === "dark" ? "text-white" : " text-dark"
+            scheme === "dark" ? "text-white" : " text-mediumGrey"
           }`}
         >
           {item.title}
@@ -49,7 +49,7 @@ const HomeScreen = () => {
         />
         <Text
           className={`text-center px-6 text-lg mt-2 ${
-            scheme === "dark" ? "text-white" : " text-dark"
+            scheme === "dark" ? "text-white" : " text-mediumGrey"
           }`}
         >
           {item.description}
@@ -68,7 +68,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView
       className={`flex-1 h-full flex items-center justify-center ${
-        scheme === "dark" ? "bg-dark text-white" : "bg-white text-dark"
+        scheme === "dark" ? "bg-dark text-white" : "bg-white text-mediumGrey"
       }`}
     >
       <View className="h-[90%] gap-4">

@@ -24,13 +24,13 @@ const InputField: React.FC<InputFieldProps> = ({
       value={value}
       //keyboardType="url"
       autoCapitalize="none"
-      borderColor={scheme === "dark" ? "#ffffff" : "#181818"}
+      borderColor={scheme === "dark" ? "#ffffff" : "#3d3d3d"}
       labelStyle={{
-        color: scheme === "dark" ? "#ffffff" : "#181818",
+        color: scheme === "dark" ? "#ffffff" : "#3d3d3d",
         fontWeight: "bold",
       }}
       inputStyle={{
-        color: scheme === "dark" ? "#181818" : "#ffffff",
+        color: scheme === "dark" ? "#3d3d3d" : "#ffffff",
         paddingRight: 30,
       }}
     />

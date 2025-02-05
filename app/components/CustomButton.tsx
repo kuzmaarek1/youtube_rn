@@ -41,17 +41,17 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   const buttonBgColor =
     scheme === "dark"
       ? isLoading
-        ? "bg-dark"
+        ? "bg-mediumGrey"
         : "bg-white"
       : isLoading
       ? "bg-white"
-      : "bg-dark";
+      : "bg-mediumGrey";
 
-  const borderColor = scheme === "dark" ? "border-grey" : "border-lightGrey";
+  const borderColor = scheme === "dark" ? "border-grey" : "border-mediumGrey";
   return (
     <View
       className={`flex items-center justify-center mt-8 ${
-        scheme === "dark" ? "text-dark" : "text-white"
+        scheme === "dark" ? "text-mediumGrey" : "text-white"
       }`}
     >
       <TouchableOpacity
@@ -65,7 +65,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
         />
         <Text
           className={`font-bold text-lg ${
-            scheme === "dark" ? "text-darker" : "text-white"
+            scheme === "dark" ? "text-mediumGrey" : "text-white"
           }`}
         >
           {isLoading ? `${progressPercent}%` : title}

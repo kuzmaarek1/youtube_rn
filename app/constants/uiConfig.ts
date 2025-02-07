@@ -11,6 +11,11 @@ const tabScreens = [
     title: "Segment Video",
     sourceImage: require("@/assets/icons/file.png"),
   },
+  {
+    name: "watch-video",
+    title: "Watch Video",
+    sourceImage: require("@/assets/icons/file.png"),
+  },
 ];
 
 const mainPages = [

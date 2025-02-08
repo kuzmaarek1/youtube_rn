@@ -25,7 +25,7 @@ const mainPages = [
     description:
       "Easily download videos from YouTube by providing a video URL and save them to your device",
     backgroundColor: "#22c55e",
-    animations: animations.youtubeAnimation,
+    animations: animations.downloandVideo,
     titleButton: "Download",
     path: "/downloand-video",
   },
@@ -38,6 +38,16 @@ const mainPages = [
     animations: animations.segmentAnimation,
     titleButton: "Segment",
     path: "/segment-video",
+  },
+  {
+    id: "2",
+    title: "Watch Videos & Listen to Audio",
+    description:
+      "Play your downloaded videos and audio files directly from your device with an easy-to-use media player.",
+    backgroundColor: "#3b82f6",
+    animations: animations.watchVideo,
+    titleButton: "Watch",
+    path: "/watch-video",
   },
 ];
 

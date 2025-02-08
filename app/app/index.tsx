@@ -57,6 +57,7 @@ const HomeScreen = () => {
         <CustomButton
           title={item.titleButton}
           onPress={() => {
+            console.log(item.path);
             router.push(item.path);
           }}
           isLoading={false}

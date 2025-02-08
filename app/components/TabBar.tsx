@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LayoutChangeEvent, View, useColorScheme } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import TabBarButton from "@/components/TabBarButton";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 
@@ -18,6 +17,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
     primary: scheme === "dark" ? "#181818" : "white",
     text: scheme === "dark" ? "white" : "#181818",
   };
+
   const onTabbarLayout = (event: LayoutChangeEvent) => {
     setDimensions({
       height: event.nativeEvent.layout.height,
@@ -26,6 +26,11 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   };
 
   const tabPositionX = useSharedValue(0);
+
+  useEffect(() => {
+    tabPositionX.value = state.index * buttonWidth;
+  }, [buttonWidth, state.index]);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: tabPositionX.value }],
@@ -35,14 +40,14 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   return (
     <View
       onLayout={onTabbarLayout}
-      className={`flex-row items-center justify-between absolute bottom-1 left-0 right-0 bg-dark py-1 rounded-2xl ${
-        scheme === "dark" ? " bg-dark " : "bg-white"
+      className={`flex-row items-center justify-between absolute bottom-1 left-0 right-0 py-1 rounded-2xl ${
+        scheme === "dark" ? "bg-dark" : "bg-white"
       }`}
     >
       <Animated.View
         className={`absolute ${
           scheme === "dark" ? "bg-white" : "bg-mediumGrey"
-        }  rounded-lg mx-4`}
+        } rounded-lg mx-4`}
         style={[
           animatedStyle,
           {
@@ -60,6 +65,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           tabPositionX.value = withTiming(index * buttonWidth, {
             duration: 300,
           });
+
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,

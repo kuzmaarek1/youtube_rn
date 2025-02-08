@@ -1,5 +1,5 @@
 import segmentAnimation from "@/assets/animations/segmentAnimation.json";
-import downloandVideo from "@/assets/animations/downloandVideo.json";
+import downloadVideo from "@/assets/animations/downloadVideo.json";
 import watchVideo from "@/assets/animations/watchVideo.json";
 
-export default { segmentAnimation, downloandVideo, watchVideo };
+export default { segmentAnimation, downloadVideo, watchVideo };

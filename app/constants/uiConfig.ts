@@ -2,7 +2,7 @@ import animations from "./animations";
 
 const tabScreens = [
   {
-    name: "downloand-video",
+    name: "download-video",
     title: "Download Video",
     sourceImage: require("@/assets/icons/youtube.png"),
   },
@@ -25,9 +25,9 @@ const mainPages = [
     description:
       "Easily download videos from YouTube by providing a video URL and save them to your device",
     backgroundColor: "#22c55e",
-    animations: animations.downloandVideo,
+    animations: animations.downloadVideo,
     titleButton: "Download",
-    path: "/downloand-video",
+    path: "/download-video",
   },
   {
     id: "1",

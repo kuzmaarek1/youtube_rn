@@ -9,6 +9,7 @@ from fastapi import Query
 from zipfile import ZipFile
 from typing import List
 import asyncio
+import mimetypes
 
 
 app = FastAPI()
@@ -18,7 +19,6 @@ class URLRequest(BaseModel):
     url: str
 
 
-# Słownik przechowujący aktywne połączenia WebSocket, mapowane do użytkowników (np. po ID)
 active_websockets = {}
 
 
@@ -56,12 +56,20 @@ def download_progress_hook(d, user_id):
 
 
 def run_blocking_download(url: str, user_id: str):
+    """
     ydl_opts = {
         "extract_audio": True,
         "format": "bestaudio",
         "outtmpl": "ds.mp3",
         "progress_hooks": [lambda d: download_progress_hook(d, user_id)],
     }
+    """
+    ydl_opts = {
+        "format": "mp4",
+        "outtmpl": "ds.mp4",
+        "progress_hooks": [lambda d: download_progress_hook(d, user_id)],
+    }
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         return info_dict
@@ -88,7 +96,11 @@ async def download_video(request: URLRequest, user_id: str):
 async def download_file(file_path: str = Query(...)):
     if os.path.exists(file_path):
         filename = os.path.basename(file_path)
-        return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if mime_type is None:
+            mime_type = "application/octet-stream"
+
+        return FileResponse(file_path, media_type=mime_type, filename=filename)
     else:
         raise HTTPException(status_code=404, detail="File not found")
 

@@ -2,19 +2,14 @@ import { View, useColorScheme } from "react-native";
 import React from "react";
 import { Jiro } from "react-native-textinput-effects";
 
-type InputFieldProps = {
+interface InputFieldProps {
   value: string;
   name: string;
   onChange: (text: string) => void;
   onBlur: () => void;
-};
+}
 
-const InputField: React.FC<InputFieldProps> = ({
-  value,
-  name,
-  onChange,
-  onBlur,
-}) => {
+const InputField = ({ value, name, onChange, onBlur }: InputFieldProps) => {
   const scheme = useColorScheme();
   return (
     <Jiro

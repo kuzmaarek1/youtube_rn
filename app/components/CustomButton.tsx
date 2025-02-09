@@ -7,19 +7,19 @@ import {
   useColorScheme,
 } from "react-native";
 
-type CustomButtonProps = {
+interface CustomButtonProps {
   title: string;
   onPress: () => void;
   isLoading: boolean;
   progressPercent: number;
-};
+}
 
-const CustomButton: React.FC<CustomButtonProps> = ({
+const CustomButton = ({
   title,
   onPress,
   isLoading,
   progressPercent,
-}) => {
+}: CustomButtonProps) => {
   const scheme = useColorScheme();
   const [fillAnimation] = useState(new Animated.Value(0));
 

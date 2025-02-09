@@ -12,13 +12,13 @@ import { Controller, useForm } from "react-hook-form";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
-import { Picker } from "@react-native-picker/picker";
 import { useKeyboard } from "@react-native-community/hooks";
 import { uiConfig } from "@/constants";
 import { useDownloadVideoMutation } from "@/api/videoApi";
 import { useDownloadFile } from "@/hooks/useDownloadFile";
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
+import FormatPicker from "@/components/FormatPicker";
 
 type FormData = {
   url: string;
@@ -50,7 +50,7 @@ const DownloadVideo = () => {
 
   useEffect(() => {
     const socket = new WebSocket(
-      `ws://192.168.0.101:8000/ws/progress/${userId}`
+      `ws://192.168.0.104:8000/ws/progress/${userId}`
     );
 
     socket.onopen = () => console.log("Połączenie WebSocket otwarte");
@@ -87,7 +87,7 @@ const DownloadVideo = () => {
 
   const handleDownloadFile = async () => {
     await downloadFile(
-      `http://192.168.0.101:8000/download-file?file_path=./ds.${selectedFormat}`,
+      `http://192.168.0.104:8000/download-file?file_path=./ds.${selectedFormat}`,
       `ds.${selectedFormat}`
     );
   };
@@ -181,58 +181,24 @@ const DownloadVideo = () => {
                       </Text>
                     )}
                   </View>
-                  <View className="w-[40%] justify-center mt-[8px]">
-                    <Text
-                      className={`text-center w-full text-[13px] mb-[4px] font-bold uppercase ${
-                        scheme === "dark" ? "text-white" : "text-mediumGrey"
-                      }`}
-                    >
-                      Format
-                    </Text>
-                    <View className="h-[48px] opacity-0" />
-                    <View className="relative">
-                      <View
-                        className={`absolute top-[-48px] h-[48px] w-full flex justify-center items-center`}
-                        style={{
-                          backgroundColor:
-                            scheme === "dark" ? "#ffffff" : "#3d3d3d",
-                          color: scheme === "dark" ? "#3d3d3d" : "#ffffff",
-                          height: 48,
-                        }}
-                      >
-                        <Text
-                          className={`uppercase font-bold text-[17px] ${
-                            scheme === "dark" ? "text-mediumGrey" : "text-white"
-                          }`}
-                        >
-                          {watch("format")}
-                        </Text>
-                      </View>
-                      <Picker
-                        selectedValue={selectedFormat}
-                        prompt="Format"
-                        onValueChange={(itemValue) => {
-                          setValue("format", itemValue);
-                          setSelectedFormat(itemValue);
-                        }}
-                        style={{
-                          backgroundColor:
-                            scheme === "dark" ? "#ffffff" : "#3d3d3d",
-                          fontWeight: 700,
-                          color: scheme === "dark" ? "#3d3d3d" : "#ffffff",
-                          height: 48,
-                          fontSize: 50,
-                          width: "100%",
-                          opacity: 0,
-                          position: "absolute",
-                          top: -48,
-                        }}
-                      >
-                        <Picker.Item label="MP4" value="mp4" />
-                        <Picker.Item label="MP3" value="mp3" />
-                      </Picker>
-                    </View>
-                  </View>
+
+                  <FormatPicker<FormData>
+                    name="format"
+                    scheme={scheme}
+                    selectedFormat={selectedFormat}
+                    watch={watch}
+                    setValue={setValue}
+                    setSelectedFormat={setSelectedFormat}
+                    containerStyle={{
+                      width: "40%",
+                      justifyContent: "center",
+                      marginTop: 8,
+                    }}
+                    items={[
+                      { label: "MP4", value: "mp4" },
+                      { label: "MP3", value: "mp3" },
+                    ]}
+                  />
                 </View>
                 <View className="w-full justify-center items-center">
                   {progress !== 100 ? (

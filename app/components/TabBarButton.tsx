@@ -10,15 +10,7 @@ import { useLinkBuilder } from "@react-navigation/native";
 import { icon } from "@/constants/tabBarIcon";
 import { TouchableOpacity } from "react-native";
 
-const TabBarButton = ({
-  onPress,
-  onLongPress,
-  label,
-  route,
-  isFocused,
-  color,
-  options,
-}: {
+interface TabBarButtonProps {
   onPress: Function;
   onLongPress: Function;
   label: any;
@@ -29,7 +21,17 @@ const TabBarButton = ({
     tabBarTestID?: string;
     tabBarAccessibilityLabel?: string;
   };
-}) => {
+}
+
+const TabBarButton = ({
+  onPress,
+  onLongPress,
+  label,
+  route,
+  isFocused,
+  color,
+  options,
+}: TabBarButtonProps) => {
   const { buildHref } = useLinkBuilder();
   const scale = useSharedValue(0);
 

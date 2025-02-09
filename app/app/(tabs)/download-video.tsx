@@ -12,6 +12,7 @@ import { Controller, useForm } from "react-hook-form";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
+import { Picker } from "@react-native-picker/picker";
 import { useKeyboard } from "@react-native-community/hooks";
 import { uiConfig } from "@/constants";
 import { useDownloadVideoMutation } from "@/api/videoApi";
@@ -21,16 +22,24 @@ import CustomButton from "@/components/CustomButton";
 
 type FormData = {
   url: string;
+  format: string;
 };
 
-const HomeScreen = () => {
+const DownloadVideo = () => {
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+    setValue,
+  } = useForm<FormData>({
+    defaultValues: {
+      url: "",
+      format: "mp3",
+    },
+  });
 
   const [progress, setProgress] = useState<number>(0);
+  const [selectedFormat, setSelectedFormat] = useState<string>("mp3");
   const { downloadFile } = useDownloadFile();
   const scheme = useColorScheme();
   const isKeyboardVisible = useKeyboard().keyboardShown;
@@ -63,9 +72,10 @@ const HomeScreen = () => {
   }, [isKeyboardVisible]);
 
   const onSubmit = async (data: FormData) => {
+    console.log({ ...data, userId });
     try {
       setProgress(0);
-      await downloadVideo({ url: data.url, userId }).unwrap();
+      await downloadVideo({ ...data, userId }).unwrap();
       console.log("Video downloaded successfully");
     } catch (err) {
       console.error("Failed to download video", err);
@@ -76,8 +86,8 @@ const HomeScreen = () => {
 
   const handleDownloadFile = async () => {
     await downloadFile(
-      "http://192.168.0.101:8000/download-file?file_path=./ds.mp4",
-      "ds.mp4"
+      `http://192.168.0.101:8000/download-file?file_path=./ds.${selectedFormat}`,
+      `ds.${selectedFormat}`
     );
   };
 
@@ -169,6 +179,25 @@ const HomeScreen = () => {
                     </Text>
                   )}
                 </View>
+                <View style={{ marginBottom: 10 }}>
+                  <Text
+                    className={`text-center ${
+                      scheme === "dark" ? "text-white" : "text-mediumGrey"
+                    }`}
+                  >
+                    Select Format
+                  </Text>
+                  <Picker
+                    selectedValue={selectedFormat}
+                    onValueChange={(itemValue) => {
+                      setValue("format", itemValue);
+                      setSelectedFormat(itemValue);
+                    }}
+                  >
+                    <Picker.Item label="MP4" value="mp4" />
+                    <Picker.Item label="MP3" value="mp3" />
+                  </Picker>
+                </View>
                 <View className="w-full justify-center items-center">
                   {progress !== 100 ? (
                     <CustomButton
@@ -194,4 +223,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default DownloadVideo;

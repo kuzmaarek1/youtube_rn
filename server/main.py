@@ -17,6 +17,7 @@ app = FastAPI()
 
 class URLRequest(BaseModel):
     url: str
+    format: str
 
 
 active_websockets = {}
@@ -55,21 +56,14 @@ def download_progress_hook(d, user_id):
             )
 
 
-def run_blocking_download(url: str, user_id: str):
-    """
+def run_blocking_download(url: str, format: str, user_id: str):
     ydl_opts = {
-        "extract_audio": True,
-        "format": "bestaudio",
-        "outtmpl": "ds.mp3",
+        "extract_audio": format == "mp3",
+        "format": ("bestaudio" if format == "mp3" else "mp4"),
+        "outtmpl": f"ds.{format}",
         "progress_hooks": [lambda d: download_progress_hook(d, user_id)],
     }
-    """
-    ydl_opts = {
-        "format": "mp4",
-        "outtmpl": "ds.mp4",
-        "progress_hooks": [lambda d: download_progress_hook(d, user_id)],
-    }
-
+    print(ydl_opts)
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         return info_dict
@@ -78,9 +72,10 @@ def run_blocking_download(url: str, user_id: str):
 @app.post("/download/{user_id}")
 async def download_video(request: URLRequest, user_id: str):
     loop = asyncio.get_event_loop()
+    print(request)
     try:
         info_dict = await loop.run_in_executor(
-            None, run_blocking_download, request.url, user_id
+            None, run_blocking_download, request.url, request.format, user_id
         )
         title = info_dict.get("title", "Unknown title")
         if user_id in active_websockets:

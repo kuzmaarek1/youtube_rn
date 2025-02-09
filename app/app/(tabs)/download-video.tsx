@@ -29,6 +29,7 @@ const DownloadVideo = () => {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
     setValue,
   } = useForm<FormData>({
@@ -140,63 +141,98 @@ const DownloadVideo = () => {
               <View
                 className={`${
                   scheme === "dark" ? "bg-mediumGrey" : "bg-lightGrey"
-                } mb-[50px] p-[20px] flex  justify-center bg-green-500 rounded-3xl`}
+                } mb-[50px] mx-[10px] px-[25px] py-[20px] flex  justify-center bg-green-500 rounded-3xl`}
               >
-                <View className="mx-4">
-                  {isKeyboardVisible && (
-                    <Text
-                      className={`px-3 text-center text-xl mt-6 font-semibold ${
-                        scheme === "dark" ? "text-white" : "text-mediumGrey"
-                      }`}
-                    >
-                      YouTube Video Downloader
-                    </Text>
-                  )}
-                  <Controller
-                    name="url"
-                    control={control}
-                    defaultValue=""
-                    rules={{
-                      required: "URL is required",
-                      pattern: {
-                        value:
-                          /^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,}(\/[\w\-./?%&=]*)?$/i,
-                        message: "Enter a valid URL",
-                      },
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <InputField
-                        value={value}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        name="URL"
-                      />
-                    )}
-                  />
-                  {errors.url && (
-                    <Text style={{ color: "red", marginBottom: 10 }}>
-                      {errors.url.message}
-                    </Text>
-                  )}
-                </View>
-                <View style={{ marginBottom: 10 }}>
+                {isKeyboardVisible && (
                   <Text
-                    className={`text-center ${
+                    className={`px-3 text-center text-xl mt-6 font-semibold ${
                       scheme === "dark" ? "text-white" : "text-mediumGrey"
                     }`}
                   >
-                    Select Format
+                    YouTube Video Downloader
                   </Text>
-                  <Picker
-                    selectedValue={selectedFormat}
-                    onValueChange={(itemValue) => {
-                      setValue("format", itemValue);
-                      setSelectedFormat(itemValue);
-                    }}
-                  >
-                    <Picker.Item label="MP4" value="mp4" />
-                    <Picker.Item label="MP3" value="mp3" />
-                  </Picker>
+                )}
+                <View className="flex w-full justify-center items-center flex-row gap-2">
+                  <View className="w-[60%] justify-center">
+                    <Controller
+                      name="url"
+                      control={control}
+                      defaultValue=""
+                      rules={{
+                        required: "URL is required",
+                        pattern: {
+                          value:
+                            /^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,}(\/[\w\-./?%&=]*)?$/i,
+                          message: "Enter a valid URL",
+                        },
+                      }}
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <InputField
+                          value={value}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          name="URL"
+                        />
+                      )}
+                    />
+                    {errors.url && (
+                      <Text style={{ color: "red", marginBottom: 10 }}>
+                        {errors.url.message}
+                      </Text>
+                    )}
+                  </View>
+                  <View className="w-[40%] justify-center mt-[8px]">
+                    <Text
+                      className={`text-center w-full text-[13px] mb-[4px] font-bold uppercase ${
+                        scheme === "dark" ? "text-white" : "text-mediumGrey"
+                      }`}
+                    >
+                      Format
+                    </Text>
+                    <View className="h-[48px] opacity-0" />
+                    <View className="relative">
+                      <View
+                        className={`absolute top-[-48px] h-[48px] w-full flex justify-center items-center`}
+                        style={{
+                          backgroundColor:
+                            scheme === "dark" ? "#ffffff" : "#3d3d3d",
+                          color: scheme === "dark" ? "#3d3d3d" : "#ffffff",
+                          height: 48,
+                        }}
+                      >
+                        <Text
+                          className={`uppercase font-bold text-[17px] ${
+                            scheme === "dark" ? "text-mediumGrey" : "text-white"
+                          }`}
+                        >
+                          {watch("format")}
+                        </Text>
+                      </View>
+                      <Picker
+                        selectedValue={selectedFormat}
+                        prompt="Format"
+                        onValueChange={(itemValue) => {
+                          setValue("format", itemValue);
+                          setSelectedFormat(itemValue);
+                        }}
+                        style={{
+                          backgroundColor:
+                            scheme === "dark" ? "#ffffff" : "#3d3d3d",
+                          fontWeight: 700,
+                          color: scheme === "dark" ? "#3d3d3d" : "#ffffff",
+                          height: 48,
+                          fontSize: 50,
+                          width: "100%",
+                          opacity: 0,
+                          position: "absolute",
+                          top: -48,
+                        }}
+                      >
+                        <Picker.Item label="MP4" value="mp4" />
+                        <Picker.Item label="MP3" value="mp3" />
+                      </Picker>
+                    </View>
+                  </View>
                 </View>
                 <View className="w-full justify-center items-center">
                   {progress !== 100 ? (

@@ -32,6 +32,7 @@ const InputField: React.FC<InputFieldProps> = ({
       inputStyle={{
         color: scheme === "dark" ? "#3d3d3d" : "#ffffff",
         paddingRight: 30,
+        fontSize: 17,
       }}
     />
   );

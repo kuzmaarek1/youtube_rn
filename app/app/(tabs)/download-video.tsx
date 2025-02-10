@@ -19,6 +19,7 @@ import { useDownloadFile } from "@/hooks/useDownloadFile";
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 import FormatPicker from "@/components/FormatPicker";
+import CustomModal from "@/components/CustomModal";
 
 type FormData = {
   url: string;
@@ -38,6 +39,9 @@ const DownloadVideo = () => {
       format: "mp3",
     },
   });
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [typeModal, setTypeModal] = useState<"success" | "error">("error");
 
   const [progress, setProgress] = useState<number>(0);
   const [selectedFormat, setSelectedFormat] = useState<string>("mp3");
@@ -53,13 +57,13 @@ const DownloadVideo = () => {
       `ws://192.168.0.104:8000/ws/progress/${userId}`
     );
 
-    socket.onopen = () => console.log("Połączenie WebSocket otwarte");
+    socket.onopen = () => console.log("WebSocket connection opened");
     socket.onmessage = (event) => {
       const match = event.data.match(/Progress: (\d+(\.\d{1,2})?)%/);
       if (match) setProgress(parseFloat(match[1]));
     };
-    socket.onerror = (error) => console.error("Błąd WebSocket:", error);
-    socket.onclose = () => console.log("Połączenie WebSocket zamknięte");
+    socket.onerror = (error) => console.error("WebSocket error:", error);
+    socket.onclose = () => console.log("WebSocket connection closed");
 
     return () => socket.close();
   }, [userId]);
@@ -96,6 +100,18 @@ const DownloadVideo = () => {
     useDownloadVideoMutation();
 
   console.log(progress);
+
+  useEffect(() => {
+    if (errors.url || (isError && error)) {
+      setErrorMessage(
+        errors.url
+          ? String(errors.url.message)
+          : "An error occurred while downloading the video"
+      );
+      setTypeModal("error");
+      setIsModalVisible(true);
+    }
+  }, [errors.url, isError, error]);
 
   return (
     <SafeAreaView
@@ -175,13 +191,7 @@ const DownloadVideo = () => {
                         />
                       )}
                     />
-                    {errors.url && (
-                      <Text style={{ color: "red", marginBottom: 10 }}>
-                        {errors.url.message}
-                      </Text>
-                    )}
                   </View>
-
                   <FormatPicker<FormData>
                     name="format"
                     scheme={scheme}
@@ -219,6 +229,13 @@ const DownloadVideo = () => {
               </View>
             </View>
           </View>
+          <CustomModal
+            scheme={scheme}
+            visible={isModalVisible}
+            onClose={() => setIsModalVisible(false)}
+            message={errorMessage}
+            type={typeModal}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

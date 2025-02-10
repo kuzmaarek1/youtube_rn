@@ -23,7 +23,7 @@ const CustomButton = ({
 
   return (
     <View
-      className={`flex items-center justify-center mt-8 ${
+      className={`flex items-center justify-center ${
         scheme === "dark" ? "text-mediumGrey" : "text-white"
       }`}
     >
@@ -34,7 +34,7 @@ const CustomButton = ({
           disabled={isLoading}
         >
           <Text
-            className={`font-bold text-lg ${
+            className={`font-bold text-[15px] text-center ${
               scheme === "dark" ? "text-mediumGrey" : "text-white"
             }`}
           >

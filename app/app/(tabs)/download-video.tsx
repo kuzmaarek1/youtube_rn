@@ -200,7 +200,7 @@ const DownloadVideo = () => {
                     ]}
                   />
                 </View>
-                <View className="w-full justify-center items-center">
+                <View className="w-full justify-center items-center mt-6">
                   {progress !== 100 ? (
                     <CustomButton
                       title="Submit"

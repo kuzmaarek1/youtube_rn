@@ -54,14 +54,16 @@ const HomeScreen = () => {
         >
           {item.description}
         </Text>
-        <CustomButton
-          title={item.titleButton}
-          onPress={() => {
-            console.log(item.path);
-            router.push(item.path);
-          }}
-          isLoading={false}
-        />
+        <View className="mt-6">
+          <CustomButton
+            title={item.titleButton}
+            onPress={() => {
+              console.log(item.path);
+              router.push(item.path);
+            }}
+            isLoading={false}
+          />
+        </View>
       </View>
     );
   };

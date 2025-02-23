@@ -22,7 +22,10 @@ export const useDownloadFile = () => {
           await FileSystem.writeAsStringAsync(fileUri, base64, {
             encoding: FileSystem.EncodingType.Base64,
           });
-          Alert.alert("Sukces", "Plik został zapisany w wybranym folderze.");
+          Alert.alert(
+            "Success",
+            "The file has been saved in the selected folder"
+          );
         } else {
           await handleShare(uri);
         }
@@ -30,8 +33,8 @@ export const useDownloadFile = () => {
         await handleShare(uri);
       }
     } catch (error) {
-      console.error("Błąd podczas zapisywania pliku:", error);
-      Alert.alert("Błąd", "Nie udało się zapisać pliku.");
+      console.error("Error while saving the file", error);
+      Alert.alert("Error", "Failed to save the file");
     }
   };
 
@@ -40,11 +43,11 @@ export const useDownloadFile = () => {
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri);
       } else {
-        Alert.alert("Brak opcji udostępniania", "Nie można udostępnić pliku.");
+        Alert.alert("No sharing options available", "Unable to share the file");
       }
     } catch (error) {
-      console.error("Błąd podczas udostępniania pliku:", error);
-      Alert.alert("Błąd", "Nie udało się udostępnić pliku.");
+      console.error("Error while sharing the file: ", error);
+      Alert.alert("Error", "Failed to share the file");
     }
   };
 
@@ -53,11 +56,11 @@ export const useDownloadFile = () => {
       const fileUri = FileSystem.documentDirectory + filename;
       const result = await FileSystem.downloadAsync(url, fileUri);
       await saveFile(result.uri, filename, result?.headers["content-type"]);
-      console.log("Usuwanie pliku z sandboxu...");
+      console.log("Deleting file from sandbox...");
       await FileSystem.deleteAsync(fileUri);
-      console.log("Plik został usunięty:", fileUri);
+      console.log("File has been deleted:", fileUri);
     } catch (error) {
-      console.error("Błąd podczas pobierania pliku:", error);
+      console.error("Error while downloading the file:", error);
     }
   };
 

@@ -99,8 +99,6 @@ const DownloadVideo = () => {
   const [downloadVideo, { isLoading, isError, isSuccess, error }] =
     useDownloadVideoMutation();
 
-  console.log(progress);
-
   useEffect(() => {
     if (errors.url || (isError && error)) {
       setErrorMessage(

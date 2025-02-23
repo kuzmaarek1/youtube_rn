@@ -60,9 +60,6 @@ const TabBarButton = ({
     opacity: 1 - scale.value,
   }));
 
-  console.log(scale.value);
-  console.log(animatedTextStyle);
-
   return (
     <PlatformPressable
       key={route.name}
@@ -73,6 +70,7 @@ const TabBarButton = ({
       accessibilityLabel={options.tabBarAccessibilityLabel}
       testID={options.tabBarTestID}
       className="flex-1 justify-center items-center gap-1"
+      pressColor="transparent"
     >
       <Animated.View style={animatedIconStyle}>
         {icon[route.name]({

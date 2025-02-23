@@ -1,18 +1,25 @@
 import React from "react";
-import { View, Text, Dimensions, useColorScheme } from "react-native";
+import { View, Dimensions, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
 import { useSharedValue } from "react-native-reanimated";
-import LottieView from "lottie-react-native";
 import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
 import { uiConfig } from "@/constants";
-import CustomButton from "@/components/CustomButton";
+import CarouselItem from "@/components/CarouselItem";
 
 const { width: windowWidth } = Dimensions.get("window");
+
+interface CarouselItemData {
+  title: string;
+  animations: any;
+  description: string;
+  titleButton: string;
+  path: "/download-video" | "/segment-video" | "/watch-video" | "/";
+}
 
 const HomeScreen = () => {
   const progress = useSharedValue<number>(0);
@@ -26,47 +33,14 @@ const HomeScreen = () => {
     });
   };
 
-  const renderItem = ({ item }) => {
-    return (
-      <View
-        className="h-full justify-center items-center"
-        style={{
-          width: windowWidth,
-        }}
-      >
-        <Text
-          className={`px-3 text-center text-4xl mt-6 font-semibold ${
-            scheme === "dark" ? "text-white" : " text-mediumGrey"
-          }`}
-        >
-          {item.title}
-        </Text>
-        <LottieView
-          source={item.animations}
-          style={{ width: "100%", height: "50%" }}
-          autoPlay
-          loop
-        />
-        <Text
-          className={`text-center px-6 text-lg mt-2 ${
-            scheme === "dark" ? "text-white" : " text-mediumGrey"
-          }`}
-        >
-          {item.description}
-        </Text>
-        <View className="mt-6">
-          <CustomButton
-            title={item.titleButton}
-            onPress={() => {
-              console.log(item.path);
-              router.push(item.path);
-            }}
-            isLoading={false}
-          />
-        </View>
-      </View>
-    );
-  };
+  const renderItem = ({ item }: { item: CarouselItemData }) => (
+    <CarouselItem
+      item={item}
+      onPress={() => {
+        router.push(item.path);
+      }}
+    />
+  );
 
   return (
     <SafeAreaView
@@ -74,7 +48,7 @@ const HomeScreen = () => {
         scheme === "dark" ? "bg-dark text-white" : "bg-white text-mediumGrey"
       }`}
     >
-      <View className="h-[90%] gap-4">
+      <View className="h-[90%]">
         <Carousel
           ref={ref}
           loop
@@ -84,7 +58,7 @@ const HomeScreen = () => {
           data={uiConfig.mainPages}
           scrollAnimationDuration={1000}
           onProgressChange={progress}
-          renderItem={({ item }) => renderItem({ item })}
+          renderItem={renderItem}
         />
         <Pagination.Basic<{ color: string }>
           progress={progress}

@@ -56,7 +56,6 @@ const SegmentVideoForm = () => {
     await downloadFile(url, file);
   };
 
-  console.log(segments);
   return (
     <SafeAreaView
       className={`h-full ${
